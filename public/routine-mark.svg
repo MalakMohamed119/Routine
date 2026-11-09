@@ -1,15 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
   <defs>
     <linearGradient id="g" x1="5" y1="4" x2="43" y2="46" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#168875" />
-      <stop offset="1" stop-color="#477f9b" />
+      <stop stop-color="#665bb5" />
+      <stop offset="1" stop-color="#6f96c5" />
     </linearGradient>
   </defs>
   <rect width="48" height="48" rx="14" fill="url(#g)" />
-  <path d="M13 15.5a3 3 0 0 1 3-3h16a3 3 0 0 1 3 3v18a3 3 0 0 1-3 3H16a3 3 0 0 1-3-3v-18Z" fill="#F8FFFD" />
-  <path d="M18 10.5v5m12-5v5M13 20h22" stroke="#D4ECE6" stroke-width="2.5" stroke-linecap="round" />
-  <rect x="17" y="24" width="5" height="5" rx="1.6" fill="#BFE8DB" />
-  <rect x="25.5" y="24" width="5" height="5" rx="1.6" fill="#D8E8EE" />
-  <path d="m17.8 32.2 1.8 1.8 3.2-3.6" stroke="#18836F" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
-  <rect x="25.5" y="31" width="5" height="4" rx="1.4" fill="#D8E8EE" />
+  <path d="M13 15.5a3 3 0 0 1 3-3h16a3 3 0 0 1 3 3v18a3 3 0 0 1-3 3H16a3 3 0 0 1-3-3v-18Z" fill="#FCFBFF" />
+  <path d="M18 10.5v5m12-5v5M13 20h22" stroke="#E2DEF4" stroke-width="2.5" stroke-linecap="round" />
+  <rect x="17" y="24" width="5" height="5" rx="1.6" fill="#DCD7F2" />
+  <rect x="25.5" y="24" width="5" height="5" rx="1.6" fill="#DCEAF4" />
+  <path d="m17.8 32.2 1.8 1.8 3.2-3.6" stroke="#655AB1" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+  <rect x="25.5" y="31" width="5" height="4" rx="1.4" fill="#DCEAF4" />
 </svg>
