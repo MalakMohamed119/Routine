@@ -2,15 +2,15 @@
   <main id="top" class="page-content">
     <section class="intro-row">
       <div class="intro-copy">
-        <div class="eyebrow"><span class="brand-mark">R</span><span class="brand-name">Routine<span class="brand-period">.</span></span><span class="eyebrow-divider"></span><span class="eyebrow-caption">{{ t('eyebrow') }}</span></div>
+        <div class="eyebrow"><img class="brand-mark" src="routine-mark.svg" alt="" aria-hidden="true" /><span class="brand-name">Routine<span class="brand-period">.</span></span><span class="eyebrow-divider"></span><span class="eyebrow-caption">{{ t('eyebrow') }}</span></div>
         <h1>{{ t('title') }}</h1>
         <p>{{ t('subtitle') }}</p>
       </div>
       <div class="intro-tools">
         <div class="quick-actions">
           <button class="button button-quiet language-button" type="button" (click)="toggleLanguage()">{{ language === 'ar' ? 'English' : 'العربية' }}</button>
-          <button class="button button-quiet stats-button" type="button" (click)="openStats()"><span class="button-icon">▤</span>{{ t('stats') }}</button>
-          <button class="button button-dark print-button" type="button" (click)="printPage()"><span class="button-icon">↗</span>{{ t('print') }}</button>
+          <button class="button button-quiet stats-button" type="button" (click)="openStats()"><svg class="button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19V5m0 14h17M8 16v-4m5 4V8m5 8v-7" /></svg>{{ t('stats') }}</button>
+          <button class="button button-dark print-button" type="button" (click)="printPage()"><svg class="button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 8V3h10v5M6 17H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /><path d="M6 14h12v7H6zM18 11h.01" /></svg>{{ t('print') }}</button>
         </div>
         <div class="week-controls">
           <button class="icon-button" type="button" [attr.aria-label]="t('previous')" (click)="changeWeek(-1)">{{ language === 'ar' ? '›' : '‹' }}</button>
@@ -45,41 +45,70 @@
           <h2>{{ t('tracker') }}</h2>
           <p>{{ t('trackerHint') }}</p>
         </div>
-        <button class="button button-danger-quiet reset-button" type="button" (click)="resetWeek()"><span class="button-icon">↺</span>{{ t('reset') }}</button>
+        <button class="button button-danger-quiet reset-button" type="button" (click)="resetWeek()"><svg class="button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 2.6-6.4L3 8" /><path d="M3 3v5h5" /></svg>{{ t('reset') }}</button>
       </div>
 
-      <div class="tracker-table">
-        <div class="tracker-grid day-header">
-          <div class="habit-heading">{{ t('routine') }}</div>
-          @for (day of weekdays; track $index) {
-            <div class="day-heading" [class.is-today]="weekDays[$index].toDateString() === todayString">
-              <span class="day-name">{{ day[language] }}</span><span class="day-date">{{ formatCompactDate(weekDays[$index]) }}</span>
-            </div>
-          }
-        </div>
+      <div class="routine-layout">
         @for (section of sections; track section.id) {
-          <div class="routine-group-row">
-            <span class="routine-icon" [class]="'routine-icon tone-' + section.tone">{{ section.icon }}</span>
-            <strong>{{ sectionTitle(section) }}</strong>
-            @if (section.id === 'water') { <span class="goal-pill">{{ t('waterGoal') }}</span> }
-          </div>
-          @for (item of section.items; track item.id) {
-            <div class="tracker-grid habit-row" [class.complete-row]="!item.water && allDaysChecked(item)">
-              <div class="habit-name">{{ text(item) }}</div>
-              @for (day of weekdays; track $index) {
-                <div class="check-cell">
-                  @if (item.water) {
-                    <div class="water-checks">
-                      @for (cup of [0, 1, 2, 3]; track cup) {
-                        <input class="routine-checkbox water-checkbox" type="checkbox" [checked]="isChecked(item, $index, cup)" (change)="setChecked(item, $index, $event, cup)" [attr.aria-label]="text(item) + ' ' + (cup + 1) + ' · ' + day[language]" />
+          @if (section.id === 'morning') {
+            <article class="routine-card full-span devotional-card">
+              <header class="routine-card-heading">
+                <span class="routine-icon tone-emerald"><app-routine-icon name="quran" /></span>
+                <h3>{{ t('devotionalGroup') }}</h3>
+              </header>
+              <div class="tracker-grid day-header">
+                <div class="habit-heading">{{ t('routine') }}</div>
+                @for (day of weekdays; track $index) {
+                  <div class="day-heading" [class.is-today]="weekDays[$index].toDateString() === todayString">
+                    <span class="day-name">{{ day[language] }}</span><span class="day-date">{{ formatCompactDate(weekDays[$index]) }}</span>
+                  </div>
+                }
+              </div>
+              @for (extra of sections.slice(5); track extra.id) {
+                @for (item of extra.items; track item.id) {
+                  <div class="tracker-grid habit-row" [class.complete-row]="allDaysChecked(item)">
+                    <div class="habit-name devotional-label"><span class="extra-symbol" [class]="'extra-symbol tone-' + extra.tone"><app-routine-icon [name]="extra.id" /></span>{{ sectionTitle(extra) }}</div>
+                    @for (day of weekdays; track $index) {
+                      <div class="check-cell"><input class="routine-checkbox" type="checkbox" [checked]="isChecked(item, $index)" (change)="setChecked(item, $index, $event)" [attr.aria-label]="text(item) + ' · ' + day[language]" /></div>
+                    }
+                  </div>
+                }
+              }
+            </article>
+          } @else if (section.id !== 'evening' && section.id !== 'quran') {
+            <article class="routine-card" [class]="'routine-card tone-card-' + section.tone" [class.full-span]="isWideSection(section)" [class.compact-card]="isCompactSection(section)">
+              <header class="routine-card-heading">
+                <span class="routine-icon" [class]="'routine-icon tone-' + section.tone"><app-routine-icon [name]="section.id" /></span>
+                <h3>{{ sectionTitle(section) }}</h3>
+                @if (section.id === 'water') { <span class="goal-pill">{{ t('waterGoal') }}</span> }
+              </header>
+              <div class="tracker-grid day-header">
+                <div class="habit-heading">{{ t('routine') }}</div>
+                @for (day of weekdays; track $index) {
+                  <div class="day-heading" [class.is-today]="weekDays[$index].toDateString() === todayString">
+                    <span class="day-name">{{ day[language] }}</span><span class="day-date">{{ formatCompactDate(weekDays[$index]) }}</span>
+                  </div>
+                }
+              </div>
+              @for (item of section.items; track item.id) {
+                <div class="tracker-grid habit-row" [class.complete-row]="!item.water && allDaysChecked(item)">
+                  <div class="habit-name">{{ text(item) }}</div>
+                  @for (day of weekdays; track $index) {
+                    <div class="check-cell">
+                      @if (item.water) {
+                        <div class="water-checks">
+                          @for (cup of [0, 1, 2, 3]; track cup) {
+                            <input class="routine-checkbox water-checkbox" type="checkbox" [checked]="isChecked(item, $index, cup)" (change)="setChecked(item, $index, $event, cup)" [attr.aria-label]="text(item) + ' ' + (cup + 1) + ' · ' + day[language]" />
+                          }
+                        </div>
+                      } @else {
+                        <input class="routine-checkbox" type="checkbox" [checked]="isChecked(item, $index)" (change)="setChecked(item, $index, $event)" [attr.aria-label]="text(item) + ' · ' + day[language]" />
                       }
                     </div>
-                  } @else {
-                    <input class="routine-checkbox" type="checkbox" [checked]="isChecked(item, $index)" (change)="setChecked(item, $index, $event)" [attr.aria-label]="text(item) + ' · ' + day[language]" />
                   }
                 </div>
               }
-            </div>
+            </article>
           }
         }
       </div>
@@ -121,9 +150,14 @@
         <div class="stats-block">
           <h3>{{ t('weekBreakdown') }}</h3>
           @if (statsWeeks.length) {
-            @for (week of statsWeeks; track week.start.getTime()) {
-              <article class="week-stat-row"><div class="week-stat-copy"><span>{{ formatDate(week.start) }} – {{ formatDate(week.days[6].date) }}</span><strong>{{ percentForWeek(week) }}%</strong></div><div class="mini-track"><div class="mini-fill" [style.width.%]="percentForWeek(week)"></div></div></article>
-            }
+            <div class="week-tiles">
+              @for (week of statsWeeks; track week.start.getTime()) {
+                <button class="month-tile week-tile" type="button" [class.selected]="isViewingWeek(week)" (click)="goToWeek(week)" [attr.aria-label]="formatDate(week.start) + ' – ' + formatDate(week.days[6].date) + ': ' + percentForWeek(week) + '%'">
+                  <span>{{ formatDate(week.start) }} – {{ formatDate(week.days[6].date) }}</span><strong>{{ percentForWeek(week) }}%</strong>
+                  <i [style.width.%]="percentForWeek(week)"></i>
+                </button>
+              }
+            </div>
           } @else { <p class="empty-state">{{ t('noData') }}</p> }
         </div>
         <div class="stats-block year-block">

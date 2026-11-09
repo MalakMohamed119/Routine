@@ -1,22 +1,23 @@
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Component, HostListener, OnInit } from '@angular/core';
+import { RoutineIconComponent } from './routine-icon.component';
 
 type Language = 'ar' | 'en';
 type RoutineItem = { id: string; ar: string; en: string; water?: boolean };
-type RoutineSection = { id: string; ar: string; en: string; icon: string; items: RoutineItem[]; tone: string };
+type RoutineSection = { id: string; ar: string; en: string; items: RoutineItem[]; tone: string };
 type DayRecord = { date: Date; checked: number; total: number };
 type WeekRecord = { start: Date; days: DayRecord[] };
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RoutineIconComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
 })
 export class AppComponent implements OnInit {
-  language: Language = 'ar';
+  language: Language = 'en';
   weekOffset = 0;
   checked = new Set<string>();
   statsOpen = false;
@@ -37,6 +38,7 @@ export class AppComponent implements OnInit {
     water: { ar: 'حصة', en: 'serving' }, waterGoal: { ar: '٢٫٥ لتر يوميًا', en: '2.5 liters daily' },
     allPrayers: { ar: 'إتمام الصلوات', en: 'All prayers completed' }, allSunnah: { ar: 'إتمام السنن والنوافل', en: 'Sunnah and voluntary prayers completed' },
     prayers: { ar: 'الصلوات المفروضة', en: 'Daily prayers' }, sunnah: { ar: 'السنن الرواتب والنوافل', en: 'Sunnah & voluntary prayers' },
+    devotionalGroup: { ar: 'الأذكار والقرآن', en: 'Daily remembrance & Quran' },
     qiyam: { ar: 'قيام الليل والوتر', en: 'Night prayer & Witr' }, tasbeeh: { ar: 'ورد التسبيح', en: 'Zikr' }, waterTitle: { ar: 'شرب المياه', en: 'Water' },
     morning: { ar: 'أذكار الصباح', en: 'Morning Azkar' }, evening: { ar: 'أذكار المساء', en: 'Evening Azkar' }, quran: { ar: 'ورد القرآن', en: 'Quran reading' },
     fajr: { ar: 'الفجر', en: 'Fajr' }, dhuhr: { ar: 'الظهر', en: 'Dhuhr' }, asr: { ar: 'العصر', en: 'Asr' }, maghrib: { ar: 'المغرب', en: 'Maghrib' }, isha: { ar: 'العشاء', en: 'Isha' },
@@ -50,35 +52,35 @@ export class AppComponent implements OnInit {
   };
 
   readonly weekdays = [
-    { ar: 'الأحد', en: 'Sun' }, { ar: 'الاثنين', en: 'Mon' }, { ar: 'الثلاثاء', en: 'Tue' },
-    { ar: 'الأربعاء', en: 'Wed' }, { ar: 'الخميس', en: 'Thu' }, { ar: 'الجمعة', en: 'Fri' }, { ar: 'السبت', en: 'Sat' },
+    { ar: 'أحد', en: 'Sun' }, { ar: 'إثن', en: 'Mon' }, { ar: 'ثلا', en: 'Tue' },
+    { ar: 'أرب', en: 'Wed' }, { ar: 'خمي', en: 'Thu' }, { ar: 'جمع', en: 'Fri' }, { ar: 'سبت', en: 'Sat' },
   ];
   readonly months = {
     ar: ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'],
     en: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
   };
   readonly sections: RoutineSection[] = [
-    { id: 'prayers', ar: 'الصلوات المفروضة', en: 'Daily prayers', icon: '✦', tone: 'indigo', items: [
+    { id: 'prayers', ar: 'الصلوات المفروضة', en: 'Daily prayers', tone: 'indigo', items: [
       { id: 'fard-fajr', ar: 'الفجر', en: 'Fajr' }, { id: 'fard-dhuhr', ar: 'الظهر', en: 'Dhuhr' }, { id: 'fard-asr', ar: 'العصر', en: 'Asr' },
       { id: 'fard-maghrib', ar: 'المغرب', en: 'Maghrib' }, { id: 'fard-isha', ar: 'العشاء', en: 'Isha' }, { id: 'fard-all', ar: 'إتمام الصلوات', en: 'All prayers completed' },
     ] },
-    { id: 'sunnah', ar: 'السنن الرواتب والنوافل', en: 'Sunnah & voluntary prayers', icon: '◈', tone: 'teal', items: [
+    { id: 'sunnah', ar: 'السنن الرواتب والنوافل', en: 'Sunnah & voluntary prayers', tone: 'teal', items: [
       { id: 'sunnah-fajr', ar: 'الفجر · ٢ قبل', en: 'Fajr · 2 before' }, { id: 'sunnah-dhuhr', ar: 'الظهر · ٤ قبل، ٢ بعد', en: 'Dhuhr · 4 before, 2 after' },
       { id: 'sunnah-asr', ar: 'العصر · ٤ قبل اختيارية', en: 'Asr · 4 before, optional' }, { id: 'sunnah-maghrib', ar: 'المغرب · ٢ بعد', en: 'Maghrib · 2 after' },
       { id: 'sunnah-isha', ar: 'العشاء · ٢ بعد + وتر', en: 'Isha · 2 after + Witr' }, { id: 'sunnah-all', ar: 'إتمام السنن والنوافل', en: 'All completed' },
     ] },
-    { id: 'qiyam', ar: 'قيام الليل والوتر', en: 'Night prayer & Witr', icon: '☾', tone: 'violet', items: [{ id: 'qiyam', ar: 'تم الإنجاز', en: 'Completed' }] },
-    { id: 'tasbeeh', ar: 'ورد التسبيح · ١٠٠٠ مرة', en: 'Zikr · 1,000 times', icon: '◉', tone: 'amber', items: [{ id: 'tasbeeh', ar: 'تم الورد', en: 'Completed' }] },
-    { id: 'water', ar: 'شرب المياه · ٢٫٥ لتر', en: 'Water · 2.5 liters', icon: '◌', tone: 'blue', items: [{ id: 'water', ar: '٤ حصص · ٦٢٥ مل', en: '4 servings · 625 ml', water: true }] },
-    { id: 'morning', ar: 'أذكار الصباح', en: 'Morning Azkar', icon: '☼', tone: 'orange', items: [{ id: 'azkar-sabah', ar: 'تمت الأذكار', en: 'Completed' }] },
-    { id: 'evening', ar: 'أذكار المساء', en: 'Evening Azkar', icon: '◐', tone: 'slate', items: [{ id: 'azkar-misaa', ar: 'تمت الأذكار', en: 'Completed' }] },
-    { id: 'quran', ar: 'ورد القرآن الكريم', en: 'Quran reading', icon: '▤', tone: 'emerald', items: [{ id: 'quran', ar: 'تم الورد', en: 'Completed' }] },
+    { id: 'qiyam', ar: 'قيام الليل والوتر', en: 'Night prayer & Witr', tone: 'violet', items: [{ id: 'qiyam', ar: 'تم الإنجاز', en: 'Completed' }] },
+    { id: 'tasbeeh', ar: 'ورد التسبيح · ١٠٠٠ مرة', en: 'Zikr · 1,000 times', tone: 'amber', items: [{ id: 'tasbeeh', ar: 'تم الورد', en: 'Completed' }] },
+    { id: 'water', ar: 'شرب المياه · ٢٫٥ لتر', en: 'Water · 2.5 liters', tone: 'blue', items: [{ id: 'water', ar: '٤ حصص · ٦٢٥ مل', en: '4 servings · 625 ml', water: true }] },
+    { id: 'morning', ar: 'أذكار الصباح', en: 'Morning Azkar', tone: 'orange', items: [{ id: 'azkar-sabah', ar: 'تمت الأذكار', en: 'Completed' }] },
+    { id: 'evening', ar: 'أذكار المساء', en: 'Evening Azkar', tone: 'slate', items: [{ id: 'azkar-misaa', ar: 'تمت الأذكار', en: 'Completed' }] },
+    { id: 'quran', ar: 'ورد القرآن الكريم', en: 'Quran reading', tone: 'emerald', items: [{ id: 'quran', ar: 'تم الورد', en: 'Completed' }] },
   ];
 
   ngOnInit(): void {
     try {
-      this.language = localStorage.getItem('girly_routine_language') === 'en' ? 'en' : 'ar';
-    } catch { this.language = 'ar'; }
+      this.language = localStorage.getItem('routine_language') === 'ar' ? 'ar' : 'en';
+    } catch { this.language = 'en'; }
     this.loadWeek();
     this.setDocumentLanguage();
   }
@@ -121,7 +123,7 @@ export class AppComponent implements OnInit {
 
   toggleLanguage(): void {
     this.language = this.language === 'ar' ? 'en' : 'ar';
-    try { localStorage.setItem('girly_routine_language', this.language); } catch { /* keep the choice for this session */ }
+    try { localStorage.setItem('routine_language', this.language); } catch { /* keep the choice for this session */ }
     this.setDocumentLanguage();
   }
   setDocumentLanguage(): void {
@@ -150,6 +152,8 @@ export class AppComponent implements OnInit {
     this.saveWeek();
   }
   allDaysChecked(item: RoutineItem): boolean { return this.weekdays.every((_, index) => this.isChecked(item, index)); }
+  isWideSection(section: RoutineSection): boolean { return ['prayers', 'sunnah', 'water'].includes(section.id); }
+  isCompactSection(section: RoutineSection): boolean { return ['qiyam', 'tasbeeh'].includes(section.id); }
   printPage(): void { window.print(); }
   changeWeek(amount: number): void { this.weekOffset += amount; this.loadWeek(); }
   goToCurrentWeek(): void { this.weekOffset = 0; this.loadWeek(); }
@@ -200,6 +204,13 @@ export class AppComponent implements OnInit {
     const done = days.reduce((sum, day) => sum + day.checked, 0);
     const total = days.reduce((sum, day) => sum + day.total, 0);
     return total ? Math.round(done / total * 100) : 0;
+  }
+  isViewingWeek(record: WeekRecord): boolean { return record.start.getTime() === this.weekStart.getTime(); }
+  goToWeek(record: WeekRecord): void {
+    const weeksApart = Math.round((record.start.getTime() - this.weekStart.getTime()) / (7 * 24 * 60 * 60 * 1000));
+    this.weekOffset += weeksApart;
+    this.loadWeek();
+    this.closeStats();
   }
   percentForMonth(month: number): number {
     const days = this.getRecords().flatMap((record) => record.days).filter((day) => day.date.getFullYear() === this.statsYear && day.date.getMonth() === month);
