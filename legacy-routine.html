@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weekly Routine</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for Cute Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Cairo -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        pinkSoft: '#f1f5f9',
+                        pinkLight: '#e2e8f0',
+                        pinkMain: '#94a3b8',
+                        pinkDeep: '#334155',
+                        pinkAccent: '#0f766e',
+                        roseGold: '#64748b',
+                        skySoft: '#f0f9ff'
+                    },
+                    fontFamily: {
+                        cairo: ['Cairo', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #f8fafc;
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 22px 22px;
+        }
+
+        /* Cute Pink Checkbox */
+        .cute-checkbox {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            border: 2px solid #94a3b8;
+            border-radius: 8px;
+            outline: none;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background-color: #ffffff;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .cute-checkbox:hover {
+            border-color: #0f766e;
+            transform: scale(1.15);
+        }
+
+        .cute-checkbox:checked {
+            background-color: #0f766e;
+            border-color: #0f766e;
+            box-shadow: 0 3px 8px rgba(15, 118, 110, 0.25);
+        }
+
+        .cute-checkbox:checked::after {
+            content: '✓';
+            font-size: 13px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* Water Checkbox Styling */
+        .water-checkbox {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #90cdf4;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            background-color: #ffffff;
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .water-checkbox:hover {
+            border-color: #3182ce;
+            transform: scale(1.15);
+        }
+
+        .water-checkbox:checked {
+            background-color: #3182ce;
+            border-color: #3182ce;
+            box-shadow: 0 2px 6px rgba(49, 130, 206, 0.3);
+        }
+
+        .water-checkbox:checked::after {
+            content: '✓';
+            font-size: 11px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* Print adjustments */
+        @media print {
+            body {
+                background: white !important;
+                padding: 0 !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .print-container {
+                box-shadow: none !important;
+                border: 1px solid #cbd5e1 !important;
+                max-width: 100% !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 12px !important;
+            }
+            .page-break {
+                page-break-inside: avoid;
+            }
+        }
+        [dir="ltr"] .text-right { text-align: left; }
+        [dir="ltr"] .pr-2 { padding-right: 0; padding-left: .5rem; }
+        [dir="ltr"] .pr-1 { padding-right: 0; padding-left: .25rem; }
+        [dir="ltr"] .border-l { border-left: 0; border-right: 1px solid #cbd5e1; }
+    </style>
+</head>
+<body class="py-4 px-2 sm:px-4 text-gray-800 min-h-screen flex flex-col justify-between">
+
+    <!-- Top Navigation & Control Bar -->
+    <div class="max-w-4xl mx-auto w-full mb-4 space-y-3 no-print">
+        
+        <!-- Controls: Print, Reset, Navigation -->
+        <div class="flex flex-wrap items-center justify-between gap-2 bg-white/90 backdrop-blur-sm p-3 rounded-2xl border-2 border-pinkMain/40 shadow-sm">
+            
+            <!-- Week Navigation Controls -->
+            <div class="flex items-center gap-2">
+                <button onclick="changeWeek(-1)" class="bg-pinkSoft text-pinkDeep hover:bg-pinkMain hover:text-white border border-pinkMain/40 w-9 h-9 rounded-full font-bold shadow-sm transition flex items-center justify-center text-sm" title="الأسبوع السابق">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+                <button onclick="goToCurrentWeek()" class="bg-pinkSoft text-pinkDeep hover:bg-pinkMain hover:text-white border border-pinkMain/40 px-3 py-1.5 rounded-full font-bold text-xs sm:text-sm shadow-sm transition">
+                    الأسبوع الحالي
+                </button>
+                <button onclick="changeWeek(1)" class="bg-pinkSoft text-pinkDeep hover:bg-pinkMain hover:text-white border border-pinkMain/40 w-9 h-9 rounded-full font-bold shadow-sm transition flex items-center justify-center text-sm" title="الأسبوع التالي">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </button>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex items-center gap-2">
+                <button onclick="exportSavedWeeks()" class="bg-white border border-pinkMain text-pinkDeep px-3 py-2 rounded-full font-semibold shadow-sm text-xs sm:text-sm">تصدير نسخة احتياطية</button>
+                <button id="languageToggle" onclick="toggleLanguage()" class="bg-white border border-pinkMain text-pinkDeep px-3 py-2 rounded-full font-semibold shadow-sm hover:bg-pinkSoft transition text-xs sm:text-sm">English</button>
+                <button onclick="openStats()" class="bg-white border border-pinkMain text-pinkDeep px-3 py-2 rounded-full font-semibold shadow-sm hover:bg-pinkSoft transition flex items-center gap-1.5 text-xs sm:text-sm">
+                    <i class="fa-solid fa-chart-column"></i> الإحصائيات
+                </button>
+                <button onclick="window.print()" class="bg-gradient-to-r from-pinkDeep to-pinkAccent text-white px-4 py-2 rounded-full font-bold shadow-md hover:opacity-90 transition flex items-center gap-1.5 text-xs sm:text-sm">
+                    <i class="fa-solid fa-print"></i> طباعة / PDF
+                </button>
+                <button onclick="resetWeekData()" class="bg-white border border-pinkMain text-pinkDeep px-3 py-2 rounded-full font-semibold shadow-sm hover:bg-pinkSoft transition flex items-center gap-1.5 text-xs sm:text-sm">
+                    <i class="fa-solid fa-rotate-left"></i> إعادة ضبط الأسبوع
+                </button>
+            </div>
+        </div>
+
+        <!-- Weekly Progress Dashboard -->
+        <div class="bg-white p-3.5 rounded-2xl border-2 border-pinkMain/40 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div class="flex items-center gap-2.5 w-full sm:w-auto">
+                <div class="w-10 h-10 rounded-full bg-pinkSoft border-2 border-pinkDeep flex items-center justify-center text-pinkDeep font-extrabold text-sm shadow-inner shrink-0" id="progressPercentage">
+                    0%
+                </div>
+                <div>
+                    <h3 class="font-bold text-xs sm:text-sm text-pinkDeep flex items-center gap-1">
+                        <i class="fa-solid fa-heart-pulse"></i> نسبة إنجاز هذا الأسبوع
+                    </h3>
+                    <p class="text-[11px] text-gray-500 font-medium" id="weekRangeDisplay">جارٍ التحميل...</p>
+                </div>
+            </div>
+            
+            <!-- Progress Bar -->
+            <div class="w-full sm:w-64 bg-pinkSoft rounded-full h-3.5 border border-pinkMain/40 overflow-hidden shadow-inner">
+                <div id="progressBar" class="bg-gradient-to-r from-pinkMain via-pinkDeep to-pinkAccent h-full rounded-full transition-all duration-500 ease-out" style="width: 0%"></div>
+            </div>
+        </div>
+    </div>
+
+    <section id="statsModal" class="hidden fixed inset-0 z-50 bg-slate-900/50 p-3 sm:p-6 overflow-y-auto no-print" role="dialog" aria-modal="true" aria-labelledby="statsTitle" onclick="if(event.target === this) closeStats()">
+        <div class="max-w-3xl mx-auto my-4 bg-white rounded-2xl shadow-2xl border border-slate-200 p-4 sm:p-6">
+            <div class="flex items-center justify-between gap-3 mb-4">
+                <div>
+                    <h2 id="statsTitle" class="text-lg font-bold text-slate-800">إحصائيات الروتين</h2>
+                    <p class="text-xs text-slate-500">ملخص من الأسابيع المحفوظة على هذا المتصفح</p>
+                </div>
+                <button onclick="closeStats()" class="w-9 h-9 rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200" aria-label="إغلاق">×</button>
+            </div>
+            <div class="flex flex-wrap gap-3 mb-4">
+                <label class="text-sm text-slate-600">الشهر
+                    <select id="statsMonth" class="block mt-1 rounded-lg border border-slate-300 px-3 py-2 bg-white"></select>
+                </label>
+                <label class="text-sm text-slate-600">السنة
+                    <select id="statsYear" class="block mt-1 rounded-lg border border-slate-300 px-3 py-2 bg-white"></select>
+                </label>
+            </div>
+            <div id="monthSummary" class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5"></div>
+            <div class="mb-5">
+                <h3 class="font-bold text-slate-700 mb-2">تفصيل الأسابيع في الشهر</h3>
+                <div id="weeksSummary" class="space-y-2"></div>
+            </div>
+            <div>
+                <h3 class="font-bold text-slate-700 mb-2">الشهور خلال السنة</h3>
+                <div id="yearSummary" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Sheet Container -->
+    <main class="print-container max-w-4xl mx-auto w-full bg-white rounded-3xl border-4 border-pinkMain/60 shadow-xl p-3 sm:p-7 relative overflow-hidden my-auto">
+        
+<!-- Days Header Bar (Single Header Row with Dynamic Dates) -->
+        <div class="grid grid-cols-8 gap-1 sm:gap-2 bg-gradient-to-r from-pinkSoft via-rose-50 to-pinkSoft p-2 sm:p-3 rounded-2xl border-2 border-pinkMain/40 mb-4 text-center items-center shadow-sm">
+            <div class="font-extrabold text-pinkDeep text-xs sm:text-sm border-l border-pinkMain/30 pl-1">
+                <i class="fa-solid fa-heart text-pinkAccent ml-1"></i> الروتين
+            </div>
+            
+            <!-- Dynamic Days Headers -->
+            <div class="flex flex-col items-center">
+                <span class="font-bold text-pinkDeep text-xs sm:text-sm">الأحد</span>
+                <span class="text-[10px] sm:text-xs text-pinkAccent font-semibold day-date" id="date-0">--</span>
+            </div>
+            <div class="flex flex-col items-center">
+                <span class="font-bold text-pinkDeep text-xs sm:text-sm">الاثنين</span>
+                <span class="text-[10px] sm:text-xs text-pinkAccent font-semibold day-date" id="date-1">--</span>
+            </div>
+            <div class="flex flex-col items-center">
+                <span class="font-bold text-pinkDeep text-xs sm:text-sm">الثلاثاء</span>
+                <span class="text-[10px] sm:text-xs text-pinkAccent font-semibold day-date" id="date-2">--</span>
+            </div>
+            <div class="flex flex-col items-center">
+                <span class="font-bold text-pinkDeep text-xs sm:text-sm">الأربعاء</span>
+                <span class="text-[10px] sm:text-xs text-pinkAccent font-semibold day-date" id="date-3">--</span>
+            </div>
+            <div class="flex flex-col items-center">
+                <span class="font-bold text-pinkDeep text-xs sm:text-sm">الخميس</span>
+                <span class="text-[10px] sm:text-xs text-pinkAccent font-semibold day-date" id="date-4">--</span>
+            </div>
+            <div class="flex flex-col items-center">
+                <span class="font-bold text-pinkDeep text-xs sm:text-sm">الجمعة</span>
+                <span class="text-[10px] sm:text-xs text-pinkAccent font-semibold day-date" id="date-5">--</span>
+            </div>
+            <div class="flex flex-col items-center">
+                <span class="font-bold text-pinkDeep text-xs sm:text-sm">السبت</span>
+                <span class="text-[10px] sm:text-xs text-pinkAccent font-semibold day-date" id="date-6">--</span>
+            </div>
+        </div>
+
+        <!-- Section 1: الفروض الخمسة -->
+        <div class="mb-4 border border-pinkMain/30 rounded-2xl p-2.5 sm:p-3 bg-pinkSoft/20 shadow-sm page-break">
+            <div class="flex items-center gap-2 mb-2 border-b border-pinkMain/30 pb-1.5">
+                <span class="bg-pinkDeep text-white text-xs px-2 py-0.5 rounded-full font-bold">1</span>
+                <h2 class="font-bold text-pinkDeep text-xs sm:text-sm flex items-center gap-1.5">
+                    <i class="fa-solid fa-kaaba text-roseGold"></i> الفروض الخمسة
+                </h2>
+            </div>
+            <div class="space-y-1">
+                <div class="grid grid-cols-8 gap-1 sm:gap-2 items-center text-center py-1 bg-white rounded-lg border border-pinkMain/20 text-xs">
+                    <div class="font-semibold text-gray-700 text-right pr-2 border-l border-pinkSoft flex items-center gap-1">
+                        <i class="fa-solid fa-sun text-amber-400 text-[10px]"></i> الفجر
+                    </div>
+                    <div><input type="checkbox" data-key="fard-fajr-0" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="fard-fajr-1" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="fard-fajr-2" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="fard-fajr-3" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="fard-fajr-4" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="fard-fajr-5" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="fard-fajr-6" class="cute-checkbox"></div>
+                </div>
+
+                <div class="grid grid-cols-8 gap-1 sm:gap-2 items-center text-center py-1 bg-white rounded-lg border border-pinkMain/20 text-xs">
+                    <div class="font-semibold text-gray-700 text-right pr-2 border-l border-pinkSoft flex items-center gap-1">
+                        <i class="fa-solid fa-sun text-yellow-500 text-[10px]"></i> الظهر
+                    </div>
+                    <div><input type="checkbox" data-key="fard-dhuhr-0" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="fard-dhuhr-1" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="fard-dhuhr-2" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="fard-dhuhr-3" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="fard-dhuhr-4" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="fard-dhuhr-5" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="fard-dhuhr-6" class="cute-checkbox"></div>
+                </div>
+
+                <div class="grid grid-cols-8 gap-1 sm:gap-2 items-center text-center py-1 bg-white rounded-lg border border-pinkMain/20 text-xs">
+                    <div class="font-semibold text-gray-700 text-right pr-2 border-l border-pinkSoft flex items-center gap-1">
+                        <i class="fa-solid fa-cloud-sun text-orange-400 text-[10px]"></i> العصر
+                    </div>
+                    <div><input type="checkbox" data-key="fard-asr-0" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="fard-asr-1" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="fard-asr-2" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="fard-asr-3" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="fard-asr-4" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="fard-asr-5" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="fard-asr-6" class="cute-checkbox"></div>
+                </div>
+
+                <div class="grid grid-cols-8 gap-1 sm:gap-2 items-center text-center py-1 bg-white rounded-lg border border-pinkMain/20 text-xs">
+                    <div class="font-semibold text-gray-700 text-right pr-2 border-l border-pinkSoft flex items-center gap-1">
+                        <i class="fa-solid fa-moon text-indigo-400 text-[10px]"></i> المغرب
+                    </div>
+                    <div><input type="checkbox" data-key="fard-maghrib-0" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="fard-maghrib-1" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="fard-maghrib-2" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="fard-maghrib-3" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="fard-maghrib-4" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="fard-maghrib-5" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="fard-maghrib-6" class="cute-checkbox"></div>
+                </div>
+
+                <div class="grid grid-cols-8 gap-1 sm:gap-2 items-center text-center py-1 bg-white rounded-lg border border-pinkMain/20 text-xs">
+                    <div class="font-semibold text-gray-700 text-right pr-2 border-l border-pinkSoft flex items-center gap-1">
+                        <i class="fa-solid fa-star text-purple-400 text-[10px]"></i> العشاء
+                    </div>
+                    <div><input type="checkbox" data-key="fard-isha-0" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="fard-isha-1" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="fard-isha-2" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="fard-isha-3" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="fard-isha-4" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="fard-isha-5" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="fard-isha-6" class="cute-checkbox"></div>
+                </div>
+
+                <!-- Total Row -->
+                <div class="grid grid-cols-8 gap-1 sm:gap-2 items-center text-center py-1 bg-pinkSoft/60 rounded-lg border border-pinkMain/40 text-xs font-bold text-pinkDeep">
+                    <div class="text-right pr-2 border-l border-pinkMain/30">تمت صلوات اليوم</div>
+                    <div><input type="checkbox" data-key="fard-all-0" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="fard-all-1" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="fard-all-2" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="fard-all-3" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="fard-all-4" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="fard-all-5" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="fard-all-6" class="cute-checkbox"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: سنن الفروض كاملة -->
+        <div class="mb-4 border border-pinkMain/30 rounded-2xl p-2.5 sm:p-3 bg-pinkSoft/20 shadow-sm page-break">
+            <div class="flex items-center gap-2 mb-2 border-b border-pinkMain/30 pb-1.5">
+                <span class="bg-pinkDeep text-white text-xs px-2 py-0.5 rounded-full font-bold">2</span>
+                <h2 class="font-bold text-pinkDeep text-xs sm:text-sm flex items-center gap-1.5">
+                    <i class="fa-solid fa-hands-praying text-roseGold"></i> السُنن الرواتب والنوافل
+                </h2>
+            </div>
+            <div class="space-y-1">
+                
+                <div class="grid grid-cols-8 gap-1 sm:gap-2 items-center text-center py-1 bg-white rounded-lg border border-pinkMain/20 text-xs">
+                    <div class="font-semibold text-gray-700 text-right pr-2 border-l border-pinkSoft">
+                        الفجر <span class="text-[10px] text-pinkAccent font-normal block leading-none">(٢ قبل)</span>
+                    </div>
+                    <div><input type="checkbox" data-key="sunnah-fajr-0" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="sunnah-fajr-1" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="sunnah-fajr-2" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="sunnah-fajr-3" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="sunnah-fajr-4" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="sunnah-fajr-5" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="sunnah-fajr-6" class="cute-checkbox"></div>
+                </div>
+
+                <div class="grid grid-cols-8 gap-1 sm:gap-2 items-center text-center py-1 bg-white rounded-lg border border-pinkMain/20 text-xs">
+                    <div class="font-semibold text-gray-700 text-right pr-2 border-l border-pinkSoft">
+                        الظهر <span class="text-[10px] text-pinkAccent font-normal block leading-none">(٤ قبل، ٢ بعد)</span>
+                    </div>
+                    <div><input type="checkbox" data-key="sunnah-dhuhr-0" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="sunnah-dhuhr-1" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="sunnah-dhuhr-2" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="sunnah-dhuhr-3" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="sunnah-dhuhr-4" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="sunnah-dhuhr-5" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="sunnah-dhuhr-6" class="cute-checkbox"></div>
+                </div>
+
+                <div class="grid grid-cols-8 gap-1 sm:gap-2 items-center text-center py-1 bg-white rounded-lg border border-pinkMain/20 text-xs">
+                    <div class="font-semibold text-gray-700 text-right pr-2 border-l border-pinkSoft">
+                        العصر <span class="text-[10px] text-gray-400 font-normal block leading-none">(٤ قبل اختيارية)</span>
+                    </div>
+                    <div><input type="checkbox" data-key="sunnah-asr-0" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="sunnah-asr-1" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="sunnah-asr-2" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="sunnah-asr-3" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="sunnah-asr-4" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="sunnah-asr-5" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="sunnah-asr-6" class="cute-checkbox"></div>
+                </div>
+
+                <div class="grid grid-cols-8 gap-1 sm:gap-2 items-center text-center py-1 bg-white rounded-lg border border-pinkMain/20 text-xs">
+                    <div class="font-semibold text-gray-700 text-right pr-2 border-l border-pinkSoft">
+                        المغرب <span class="text-[10px] text-pinkAccent font-normal block leading-none">(٢ بعد)</span>
+                    </div>
+                    <div><input type="checkbox" data-key="sunnah-maghrib-0" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="sunnah-maghrib-1" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="sunnah-maghrib-2" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="sunnah-maghrib-3" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="sunnah-maghrib-4" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="sunnah-maghrib-5" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="sunnah-maghrib-6" class="cute-checkbox"></div>
+                </div>
+
+                <div class="grid grid-cols-8 gap-1 sm:gap-2 items-center text-center py-1 bg-white rounded-lg border border-pinkMain/20 text-xs">
+                    <div class="font-semibold text-gray-700 text-right pr-2 border-l border-pinkSoft">
+                        العشاء <span class="text-[10px] text-pinkAccent font-normal block leading-none">(٢ بعد + وتر)</span>
+                    </div>
+                    <div><input type="checkbox" data-key="sunnah-isha-0" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="sunnah-isha-1" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="sunnah-isha-2" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="sunnah-isha-3" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="sunnah-isha-4" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="sunnah-isha-5" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="sunnah-isha-6" class="cute-checkbox"></div>
+                </div>
+
+                <!-- Total Row -->
+                <div class="grid grid-cols-8 gap-1 sm:gap-2 items-center text-center py-1 bg-pinkSoft/60 rounded-lg border border-pinkMain/40 text-xs font-bold text-pinkDeep">
+                    <div class="text-right pr-2 border-l border-pinkMain/30">تمت السُنن بالكامل</div>
+                    <div><input type="checkbox" data-key="sunnah-all-0" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="sunnah-all-1" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="sunnah-all-2" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="sunnah-all-3" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="sunnah-all-4" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="sunnah-all-5" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="sunnah-all-6" class="cute-checkbox"></div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Section 3 & 4: قيام الليل + ورد التسبيح -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4 page-break">
+            <!-- 3. قيام الليل -->
+            <div class="border border-pinkMain/30 rounded-2xl p-2.5 bg-pinkSoft/20 shadow-sm">
+                <div class="flex items-center gap-2 mb-1.5 border-b border-pinkMain/30 pb-1">
+                    <span class="bg-pinkDeep text-white text-xs px-2 py-0.5 rounded-full font-bold">3</span>
+                    <h2 class="font-bold text-pinkDeep text-xs sm:text-sm flex items-center gap-1.5">
+                        <i class="fa-solid fa-moon text-purple-400"></i> قيام الليل والوتر
+                    </h2>
+                </div>
+                <div class="grid grid-cols-8 gap-1 text-center py-1.5 bg-white rounded-xl border border-pinkMain/20 items-center">
+                    <div class="text-xs font-semibold text-gray-600 border-l border-pinkSoft pr-1 text-right">الإنجاز</div>
+                    <div><input type="checkbox" data-key="qiyam-0" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="qiyam-1" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="qiyam-2" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="qiyam-3" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="qiyam-4" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="qiyam-5" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="qiyam-6" class="cute-checkbox"></div>
+                </div>
+            </div>
+
+            <!-- 4. ورد التسبيح -->
+            <div class="border border-pinkMain/30 rounded-2xl p-2.5 bg-pinkSoft/20 shadow-sm">
+                <div class="flex items-center gap-2 mb-1.5 border-b border-pinkMain/30 pb-1">
+                    <span class="bg-pinkDeep text-white text-xs px-2 py-0.5 rounded-full font-bold">4</span>
+                    <h2 class="font-bold text-pinkDeep text-xs sm:text-sm flex items-center gap-1.5">
+                        <i class="fa-solid fa-hands text-roseGold"></i> ورد التسبيح (١٠٠٠ مرة)
+                    </h2>
+                </div>
+                <div class="grid grid-cols-8 gap-1 text-center py-1.5 bg-white rounded-xl border border-pinkMain/20 items-center">
+                    <div class="text-xs font-semibold text-gray-600 border-l border-pinkSoft pr-1 text-right">تم الورد</div>
+                    <div><input type="checkbox" data-key="tasbeeh-0" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="tasbeeh-1" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="tasbeeh-2" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="tasbeeh-3" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="tasbeeh-4" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="tasbeeh-5" class="cute-checkbox"></div>
+                    <div><input type="checkbox" data-key="tasbeeh-6" class="cute-checkbox"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 5: شرب المياه (2.5 لتر) - 4x625ml -->
+        <div class="mb-4 border border-sky-200 rounded-2xl p-2.5 sm:p-3 bg-sky-50/40 shadow-sm page-break">
+            <div class="flex items-center justify-between mb-1.5 border-b border-sky-200 pb-1">
+                <div class="flex items-center gap-2">
+                    <span class="bg-sky-400 text-white text-xs px-2 py-0.5 rounded-full font-bold">5</span>
+                    <h2 class="font-bold text-sky-700 text-xs sm:text-sm flex items-center gap-1.5">
+                        <i class="fa-solid fa-glass-water text-sky-500"></i> شُرب المياه (٢,٥ لتر يومياً)
+                    </h2>
+                </div>
+                <span class="text-[11px] text-sky-600 font-bold bg-white px-2 py-0.5 rounded-full border border-sky-200">
+                    ٤ × ٦٢٥ مل
+                </span>
+            </div>
+
+            <!-- Grid for 4 water cups per day -->
+            <div class="grid grid-cols-8 gap-1 sm:gap-2 items-center text-center py-1.5 bg-white rounded-xl border border-sky-200">
+                <div class="text-xs font-bold text-sky-700 border-l border-sky-100 pr-1 text-right leading-tight">
+                    الحصص الـ ٤
+                </div>
+                <!-- 7 Days Water Checks -->
+                <script>
+                    for(let d=0; d<7; d++) {
+                        document.write(`
+                            <div class="flex flex-col items-center gap-1 py-0.5 ${d < 6 ? 'border-r border-sky-100' : ''}">
+                                <div class="flex gap-1 justify-center">
+                                    <input type="checkbox" data-key="water-${d}-1" class="water-checkbox">
+                                    <input type="checkbox" data-key="water-${d}-2" class="water-checkbox">
+                                </div>
+                                <div class="flex gap-1 justify-center">
+                                    <input type="checkbox" data-key="water-${d}-3" class="water-checkbox">
+                                    <input type="checkbox" data-key="water-${d}-4" class="water-checkbox">
+                                </div>
+                            </div>
+                        `);
+                    }
+                </script>
+            </div>
+        </div>
+
+        <!-- Section 6, 7 & 8: أذكار الصباح + المساء + القرآن -->
+        <div class="border border-pinkMain/30 rounded-2xl p-2.5 sm:p-3 bg-pinkSoft/20 shadow-sm space-y-1.5 page-break">
+            
+            <!-- 6. أذكار الصباح -->
+            <div class="grid grid-cols-8 gap-1 sm:gap-2 items-center text-center py-1 bg-white rounded-xl border border-pinkMain/20 text-xs">
+                <div class="font-semibold text-pinkDeep text-right pr-2 border-l border-pinkSoft flex items-center gap-1">
+                    <span class="bg-pinkDeep text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold shrink-0">6</span>
+                    <i class="fa-solid fa-sun text-amber-400"></i> أذكار الصباح
+                </div>
+                <div><input type="checkbox" data-key="azkar-sabah-0" class="cute-checkbox"></div>
+                <div><input type="checkbox" data-key="azkar-sabah-1" class="cute-checkbox"></div>
+                <div><input type="checkbox" data-key="azkar-sabah-2" class="cute-checkbox"></div>
+                <div><input type="checkbox" data-key="azkar-sabah-3" class="cute-checkbox"></div>
+                <div><input type="checkbox" data-key="azkar-sabah-4" class="cute-checkbox"></div>
+                <div><input type="checkbox" data-key="azkar-sabah-5" class="cute-checkbox"></div>
+                <div><input type="checkbox" data-key="azkar-sabah-6" class="cute-checkbox"></div>
+            </div>
+
+            <!-- 7. أذكار المساء -->
+            <div class="grid grid-cols-8 gap-1 sm:gap-2 items-center text-center py-1 bg-white rounded-xl border border-pinkMain/20 text-xs">
+                <div class="font-semibold text-pinkDeep text-right pr-2 border-l border-pinkSoft flex items-center gap-1">
+                    <span class="bg-pinkDeep text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold shrink-0">7</span>
+                    <i class="fa-solid fa-cloud-moon text-indigo-400"></i> أذكار المساء
+                </div>
+                <div><input type="checkbox" data-key="azkar-misaa-0" class="cute-checkbox"></div>
+                <div><input type="checkbox" data-key="azkar-misaa-1" class="cute-checkbox"></div>
+                <div><input type="checkbox" data-key="azkar-misaa-2" class="cute-checkbox"></div>
+                <div><input type="checkbox" data-key="azkar-misaa-3" class="cute-checkbox"></div>
+                <div><input type="checkbox" data-key="azkar-misaa-4" class="cute-checkbox"></div>
+                <div><input type="checkbox" data-key="azkar-misaa-5" class="cute-checkbox"></div>
+                <div><input type="checkbox" data-key="azkar-misaa-6" class="cute-checkbox"></div>
+            </div>
+
+            <!-- 8. ورد القرآن الكريم -->
+            <div class="grid grid-cols-8 gap-1 sm:gap-2 items-center text-center py-1 bg-white rounded-xl border border-pinkMain/20 text-xs">
+                <div class="font-semibold text-pinkDeep text-right pr-2 border-l border-pinkSoft flex items-center gap-1">
+                    <span class="bg-pinkDeep text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold shrink-0">8</span>
+                    <i class="fa-solid fa-book-quran text-emerald-500"></i> ورد القرآن
+                </div>
+                <div><input type="checkbox" data-key="quran-0" class="cute-checkbox"></div>
+                <div><input type="checkbox" data-key="quran-1" class="cute-checkbox"></div>
+                <div><input type="checkbox" data-key="quran-2" class="cute-checkbox"></div>
+                <div><input type="checkbox" data-key="quran-3" class="cute-checkbox"></div>
+                <div><input type="checkbox" data-key="quran-4" class="cute-checkbox"></div>
+                <div><input type="checkbox" data-key="quran-5" class="cute-checkbox"></div>
+                <div><input type="checkbox" data-key="quran-6" class="cute-checkbox"></div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        let currentWeekOffset = 0; // 0 = current week, -1 = last week, 1 = next week
+        let currentLanguage = 'ar';
+        const originalTextNodes = new WeakMap();
+        const translations = {
+            'الأسبوع السابق': 'Previous week', 'الأسبوع التالي': 'Next week', 'الأسبوع الحالي': 'Current week',
+            'الإحصائيات': 'Statistics', 'طباعة / PDF': 'Print / PDF', 'إعادة ضبط الأسبوع': 'Reset week', 'تصدير نسخة احتياطية': 'Export backup',
+            'نسبة إنجاز هذا الأسبوع': 'This week progress', 'جارٍ التحميل...': 'Loading...',
+            'إحصائيات الروتين': 'Routine statistics', 'ملخص من الأسابيع المحفوظة على هذا المتصفح': 'Summary of weeks saved in this browser',
+            'إغلاق': 'Close', 'الشهر': 'Month', 'السنة': 'Year', 'تفصيل الأسابيع في الشهر': 'Weeks this month',
+            'الشهور خلال السنة': 'Months this year', 'لا توجد بيانات محفوظة لهذا الشهر بعد.': 'No saved data for this month yet.',
+            'معدل الإنجاز': 'Completion rate', 'المهام المنجزة': 'Tasks completed', 'من': 'of', 'الأيام المسجلة': 'Days recorded', 'يوم': 'days',
+            'الأحد': 'Sunday', 'الاثنين': 'Monday', 'الثلاثاء': 'Tuesday', 'الأربعاء': 'Wednesday', 'الخميس': 'Thursday', 'الجمعة': 'Friday', 'السبت': 'Saturday',
+            'الروتين': 'Routine', 'الفروض الخمسة': 'The five daily prayers', 'الفجر': 'Fajr', 'الظهر': 'Dhuhr', 'العصر': 'Asr', 'المغرب': 'Maghrib', 'العشاء': 'Isha',
+            'تمت صلوات اليوم': 'All prayers completed', 'السُنن الرواتب والنوافل': 'Sunnah prayers and voluntary prayers',
+            '(٢ قبل)': '(2 before)', '(٤ قبل، ٢ بعد)': '(4 before, 2 after)', '(٤ قبل اختيارية)': '(4 before, optional)', '(٢ بعد)': '(2 after)', '(٢ بعد + وتر)': '(2 after + Witr)',
+            'تمت السُنن بالكامل': 'All Sunnah prayers completed', 'قيام الليل والوتر': 'Night prayer and Witr', 'الإنجاز': 'Completed',
+            'ورد التسبيح (١٠٠٠ مرة)': 'Dhikr (1,000 times)', 'تم الورد': 'Completed', 'شُرب المياه (٢,٥ لتر يومياً)': 'Daily water (2.5 liters)',
+            '٤ × ٦٢٥ مل': '4 × 625 ml', 'الحصص الـ ٤': '4 servings', 'أذكار الصباح': 'Morning adhkar', 'أذكار المساء': 'Evening adhkar', 'ورد القرآن': 'Quran reading'
+        };
+        const monthNames = {
+            ar: ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'],
+            en: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+        };
+
+        function translate(text) {
+            if (currentLanguage === 'ar') return text;
+            return translations[text] || text;
+        }
+
+        function applyLanguage() {
+            const html = document.documentElement;
+            html.lang = currentLanguage;
+            html.dir = currentLanguage === 'ar' ? 'rtl' : 'ltr';
+            const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+            while (walker.nextNode()) {
+                const node = walker.currentNode;
+                if (!originalTextNodes.has(node)) originalTextNodes.set(node, node.nodeValue);
+                const original = originalTextNodes.get(node);
+                const trimmed = original.trim();
+                if (!trimmed) continue;
+                const replacement = translate(trimmed);
+                node.nodeValue = original.replace(trimmed, replacement);
+            }
+            document.getElementById('languageToggle').textContent = currentLanguage === 'ar' ? 'English' : 'العربية';
+            document.querySelector('[title="الأسبوع السابق"]')?.setAttribute('title', currentLanguage === 'ar' ? 'الأسبوع السابق' : 'Previous week');
+            document.querySelector('[title="الأسبوع التالي"]')?.setAttribute('title', currentLanguage === 'ar' ? 'الأسبوع التالي' : 'Next week');
+            document.querySelector('[aria-label="إغلاق"]')?.setAttribute('aria-label', currentLanguage === 'ar' ? 'إغلاق' : 'Close');
+            document.title = 'Weekly Routine';
+            updateDatesHeader();
+            refreshStatsMonthOptions();
+            if (!document.getElementById('statsModal').classList.contains('hidden')) renderStats();
+        }
+
+        function toggleLanguage() {
+            currentLanguage = currentLanguage === 'ar' ? 'en' : 'ar';
+            try { localStorage.setItem('girly_routine_language', currentLanguage); } catch (error) { console.error('تعذر حفظ اللغة:', error); }
+            applyLanguage();
+        }
+
+        // Get the Sunday of the current target week
+        function getSundayOfOffset(offset = 0) {
+            const now = new Date();
+            const dayOfWeek = now.getDay(); // 0 is Sunday
+            const sunday = new Date(now);
+            sunday.setDate(now.getDate() - dayOfWeek + (offset * 7));
+            return sunday;
+        }
+
+        // Format Date to "12 Nov" in Arabic
+        function formatDateArabic(dateObj) {
+            const month = monthNames[currentLanguage][dateObj.getMonth()];
+            return currentLanguage === 'ar' ? `${dateObj.getDate()} ${month}` : `${month.slice(0, 3)} ${dateObj.getDate()}`;
+        }
+
+        // Get Unique Storage Key for current week
+        function getWeekStorageKey(offset) {
+            const sunday = getSundayOfOffset(offset);
+            const year = sunday.getFullYear();
+            const month = sunday.getMonth() + 1;
+            const date = sunday.getDate();
+            return `girly_routine_${year}_W${month}_${date}`;
+        }
+
+        // Update Dates displayed on headers
+        function updateDatesHeader() {
+            const sunday = getSundayOfOffset(currentWeekOffset);
+            const datesArr = [];
+
+            for (let i = 0; i < 7; i++) {
+                const dayDate = new Date(sunday);
+                dayDate.setDate(sunday.getDate() + i);
+                datesArr.push(dayDate);
+                const dateEl = document.getElementById(`date-${i}`);
+                if (dateEl) {
+                    dateEl.textContent = formatDateArabic(dayDate);
+                }
+            }
+
+            // Update Week Range text in Progress Dashboard
+            const startDateStr = formatDateArabic(datesArr[0]);
+            const endDateStr = formatDateArabic(datesArr[6]);
+            const weekRangeEl = document.getElementById('weekRangeDisplay');
+            if (weekRangeEl) {
+                weekRangeEl.textContent = currentLanguage === 'ar' ? `الأسبوع من ${startDateStr} إلى ${endDateStr}` : `Week of ${startDateStr} – ${endDateStr}`;
+            }
+        }
+
+        function exportSavedWeeks() {
+            const weeks = {};
+            for (let index = 0; index < localStorage.length; index++) {
+                const key = localStorage.key(index);
+                if (key && /^girly_routine_\d{4}_W\d{1,2}_\d{1,2}$/.test(key)) weeks[key] = JSON.parse(localStorage.getItem(key) || '{}');
+            }
+            const file = new Blob([JSON.stringify({ version: 1, weeks }, null, 2)], { type: 'application/json' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(file);
+            link.download = 'routine-backup.json';
+            link.click();
+            URL.revokeObjectURL(link.href);
+        }
+
+        // Load checkboxes state from LocalStorage for active week
+        function loadWeekData() {
+            const storageKey = getWeekStorageKey(currentWeekOffset);
+            let savedData = {};
+            try {
+                savedData = JSON.parse(localStorage.getItem(storageKey) || '{}');
+            } catch (error) {
+                console.error('تعذر قراءة البيانات المحفوظة:', error);
+            }
+
+            const allCheckboxes = document.querySelectorAll('input[type="checkbox"][data-key]');
+            allCheckboxes.forEach(cb => {
+                const key = cb.getAttribute('data-key');
+                cb.checked = !!savedData[key];
+            });
+
+            calculateProgress();
+        }
+
+        // Save state to LocalStorage
+        function saveWeekData() {
+            const storageKey = getWeekStorageKey(currentWeekOffset);
+            const saveData = {};
+
+            const allCheckboxes = document.querySelectorAll('input[type="checkbox"][data-key]');
+            allCheckboxes.forEach(cb => {
+                const key = cb.getAttribute('data-key');
+                if (cb.checked) {
+                    saveData[key] = true;
+                }
+            });
+
+            try {
+                localStorage.setItem(storageKey, JSON.stringify(saveData));
+            } catch (error) {
+                console.error('تعذر حفظ البيانات:', error);
+            }
+            calculateProgress();
+        }
+
+        // Calculate and animate Progress Bar
+        function calculateProgress() {
+            const allCheckboxes = document.querySelectorAll('input[type="checkbox"][data-key]');
+            const total = allCheckboxes.length;
+            let checkedCount = 0;
+
+            allCheckboxes.forEach(cb => {
+                if (cb.checked) checkedCount++;
+            });
+
+            const percent = total > 0 ? Math.round((checkedCount / total) * 100) : 0;
+            
+            const progressBar = document.getElementById('progressBar');
+            const progressPercentage = document.getElementById('progressPercentage');
+            
+            if (progressBar) progressBar.style.width = `${percent}%`;
+            if (progressPercentage) progressPercentage.textContent = `${percent}%`;
+        }
+
+        // Change Week View
+        function changeWeek(direction) {
+            currentWeekOffset += direction;
+            updateDatesHeader();
+            loadWeekData();
+        }
+
+        // Reset to current week
+        function goToCurrentWeek() {
+            currentWeekOffset = 0;
+            updateDatesHeader();
+            loadWeekData();
+        }
+
+        // Reset current week's checkmarks
+        function resetWeekData() {
+            const storageKey = getWeekStorageKey(currentWeekOffset);
+            try {
+                localStorage.removeItem(storageKey);
+            } catch (error) {
+                console.error('تعذر مسح البيانات المحفوظة:', error);
+            }
+            loadWeekData();
+        }
+
+        function refreshStatsMonthOptions() {
+            const monthSelect = document.getElementById('statsMonth');
+            if (!monthSelect) return;
+            const selectedMonth = monthSelect.value;
+            monthSelect.innerHTML = monthNames[currentLanguage].map((month, index) => `<option value="${index}">${month}</option>`).join('');
+            if (selectedMonth !== '') monthSelect.value = selectedMonth;
+        }
+
+        function getSavedWeekRecords() {
+            const records = [];
+            const dailyTotals = Array(7).fill(0);
+            document.querySelectorAll('input[type="checkbox"][data-key]').forEach((checkbox) => {
+                const key = checkbox.dataset.key;
+                const dayIndex = key.startsWith('water-')
+                    ? Number(key.match(/^water-(\d+)-/)?.[1])
+                    : Number(key.match(/-(\d+)$/)?.[1]);
+                if (Number.isInteger(dayIndex) && dayIndex >= 0 && dayIndex < 7) dailyTotals[dayIndex]++;
+            });
+
+            try {
+                for (let i = 0; i < localStorage.length; i++) {
+                    const storageKey = localStorage.key(i);
+                    const match = storageKey?.match(/^girly_routine_(\d{4})_W(\d{1,2})_(\d{1,2})$/);
+                    if (!match) continue;
+                    const [, year, month, day] = match;
+                    const saved = JSON.parse(localStorage.getItem(storageKey) || '{}');
+                    const start = new Date(Number(year), Number(month) - 1, Number(day));
+                    if (Number.isNaN(start.getTime())) continue;
+                    const daily = Array.from({ length: 7 }, (_, index) => ({ date: new Date(start.getFullYear(), start.getMonth(), start.getDate() + index), checked: 0, total: dailyTotals[index] }));
+                    Object.entries(saved).forEach(([key, checked]) => {
+                        if (!checked) return;
+                        const dayIndex = key.startsWith('water-')
+                            ? Number(key.match(/^water-(\d+)-/)?.[1])
+                            : Number(key.match(/-(\d+)$/)?.[1]);
+                        if (Number.isInteger(dayIndex) && daily[dayIndex]) daily[dayIndex].checked++;
+                    });
+                    records.push({ start, daily });
+                }
+            } catch (error) {
+                console.error('تعذر قراءة سجل الإحصائيات:', error);
+            }
+            return records.sort((a, b) => a.start - b.start);
+        }
+
+        function openStats() {
+            const records = getSavedWeekRecords();
+            const years = new Set([new Date().getFullYear(), ...records.map((record) => record.start.getFullYear())]);
+            const yearSelect = document.getElementById('statsYear');
+            const monthSelect = document.getElementById('statsMonth');
+            const selectedYear = Number(yearSelect.value) || new Date().getFullYear();
+            yearSelect.innerHTML = [...years].sort((a, b) => b - a).map((year) => `<option value="${year}">${year}</option>`).join('');
+            yearSelect.value = String(years.has(selectedYear) ? selectedYear : new Date().getFullYear());
+            refreshStatsMonthOptions();
+            if (!monthSelect.dataset.initialized) {
+                monthSelect.value = String(new Date().getMonth());
+                monthSelect.dataset.initialized = 'true';
+            }
+            document.getElementById('statsModal').classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
+            renderStats(records);
+        }
+
+        function closeStats() {
+            document.getElementById('statsModal').classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
+
+        function renderStats(records = getSavedWeekRecords()) {
+            const month = Number(document.getElementById('statsMonth').value);
+            const year = Number(document.getElementById('statsYear').value);
+            const selectedDays = records.flatMap((record) => record.daily).filter((day) => day.date.getFullYear() === year && day.date.getMonth() === month);
+            const aggregate = (days) => ({ checked: days.reduce((sum, day) => sum + day.checked, 0), total: days.reduce((sum, day) => sum + day.total, 0), days: days.length });
+            const monthData = aggregate(selectedDays);
+            const percent = monthData.total ? Math.round(monthData.checked / monthData.total * 100) : 0;
+            document.getElementById('monthSummary').innerHTML = [
+                [translate('معدل الإنجاز'), `${percent}%`],
+                [translate('المهام المنجزة'), `${monthData.checked} ${translate('من')} ${monthData.total}`],
+                [translate('الأيام المسجلة'), `${monthData.days} ${translate('يوم')}`]
+            ].map(([label, value]) => `<div class="rounded-xl border border-slate-200 bg-slate-50 p-3"><div class="text-xs text-slate-500">${label}</div><div class="text-xl font-bold text-slate-800 mt-1">${value}</div></div>`).join('');
+
+            const weeks = records.map((record) => ({ ...record, days: record.daily.filter((day) => day.date.getFullYear() === year && day.date.getMonth() === month) })).filter((record) => record.days.length);
+            document.getElementById('weeksSummary').innerHTML = weeks.length ? weeks.map((record) => {
+                const data = aggregate(record.days);
+                const rate = data.total ? Math.round(data.checked / data.total * 100) : 0;
+                const weekEnd = record.daily[6].date;
+                return `<div class="flex items-center gap-3 rounded-xl border border-slate-200 p-3"><div class="min-w-32 text-xs text-slate-600">${formatDateArabic(record.start)} – ${formatDateArabic(weekEnd)}</div><div class="flex-1 h-2.5 bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-teal-700 rounded-full" style="width:${rate}%"></div></div><div class="text-sm font-bold text-slate-700 w-10 text-left">${rate}%</div></div>`;
+            }).join('') : `<p class="text-sm text-slate-500 rounded-xl bg-slate-50 p-4">${translate('لا توجد بيانات محفوظة لهذا الشهر بعد.')}</p>`;
+
+            const months = monthNames[currentLanguage].map((name, index) => {
+                const data = aggregate(records.flatMap((record) => record.daily).filter((day) => day.date.getFullYear() === year && day.date.getMonth() === index));
+                const rate = data.total ? Math.round(data.checked / data.total * 100) : 0;
+                return `<div class="flex items-center gap-2 rounded-lg bg-slate-50 px-3 py-2"><span class="w-20 text-sm text-slate-600">${name}</span><div class="flex-1 h-2 bg-slate-200 rounded-full overflow-hidden"><div class="h-full bg-teal-700 rounded-full" style="width:${rate}%"></div></div><span class="w-10 text-left text-xs font-semibold text-slate-700">${data.days ? `${rate}%` : '—'}</span></div>`;
+            });
+            document.getElementById('yearSummary').innerHTML = months.join('');
+        }
+
+        // Event listeners & Startup
+        window.addEventListener('DOMContentLoaded', () => {
+            try { currentLanguage = localStorage.getItem('girly_routine_language') === 'en' ? 'en' : 'ar'; } catch (error) { currentLanguage = 'ar'; }
+            applyLanguage();
+            updateDatesHeader();
+            loadWeekData();
+
+            // Delegate change events to save data immediately
+            document.body.addEventListener('change', (e) => {
+                if (e.target.matches('input[type="checkbox"][data-key]')) {
+                    saveWeekData();
+                }
+            });
+            document.getElementById('statsMonth').addEventListener('change', () => renderStats());
+            document.getElementById('statsYear').addEventListener('change', () => renderStats());
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape' && !document.getElementById('statsModal').classList.contains('hidden')) closeStats();
+            });
+        });
+    </script>
+</body>
+</html>

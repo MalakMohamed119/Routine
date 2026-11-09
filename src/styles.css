@@ -1,0 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap');
+
+* { box-sizing: border-box; }
+html { min-width: 320px; scroll-behavior: smooth; background: #f4f6f8; }
+body { min-width: 320px; min-height: 100vh; margin: 0; font-family: Inter, Cairo, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+button, select, input { font: inherit; }
+button:focus-visible, select:focus-visible, input:focus-visible { outline: 3px solid #74cdb1; outline-offset: 2px; }
+::selection { background: #c8eee1; color: #153f45; }

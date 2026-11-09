@@ -1,0 +1,143 @@
+<div class="app-shell" [attr.dir]="dir" [class.english]="language === 'en'">
+  <main id="top" class="page-content">
+    <section class="intro-row">
+      <div class="intro-copy">
+        <div class="eyebrow"><span class="brand-mark">R</span><span class="brand-name">Routine<span class="brand-period">.</span></span><span class="eyebrow-divider"></span><span class="eyebrow-caption">{{ t('eyebrow') }}</span></div>
+        <h1>{{ t('title') }}</h1>
+        <p>{{ t('subtitle') }}</p>
+      </div>
+      <div class="intro-tools">
+        <div class="quick-actions">
+          <button class="button button-quiet language-button" type="button" (click)="toggleLanguage()">{{ language === 'ar' ? 'English' : 'العربية' }}</button>
+          <button class="button button-quiet stats-button" type="button" (click)="openStats()"><span class="button-icon">▤</span>{{ t('stats') }}</button>
+          <button class="button button-dark print-button" type="button" (click)="printPage()"><span class="button-icon">↗</span>{{ t('print') }}</button>
+        </div>
+        <div class="week-controls">
+          <button class="icon-button" type="button" [attr.aria-label]="t('previous')" (click)="changeWeek(-1)">{{ language === 'ar' ? '›' : '‹' }}</button>
+          <button class="button button-quiet current-week" type="button" (click)="goToCurrentWeek()">{{ t('current') }}</button>
+          <button class="icon-button" type="button" [attr.aria-label]="t('next')" (click)="changeWeek(1)">{{ language === 'ar' ? '‹' : '›' }}</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="overview-card" aria-label="Weekly progress">
+      <div class="overview-main">
+        <div class="progress-ring" [style.--progress]="progress + '%'">
+          <div class="progress-ring-inner"><strong>{{ progress }}%</strong></div>
+        </div>
+        <div class="overview-copy">
+          <span class="overview-label">{{ t('progress') }}</span>
+          <strong class="overview-number">{{ completedTasks }} <span>{{ t('completed') }}</span></strong>
+          <span class="week-range">{{ weekLabel }}</span>
+        </div>
+      </div>
+      <div class="overview-side">
+        <div class="overview-side-top"><span>{{ t('today') }}</span><strong>{{ progress }}%</strong></div>
+        <div class="progress-track"><div class="progress-fill" [style.width.%]="progress"></div></div>
+        <span class="save-note"><span class="save-check">✓</span>{{ t('saved') }}</span>
+      </div>
+    </section>
+
+    <section class="tracker-section">
+      <div class="section-heading">
+        <div>
+          <span class="section-kicker">{{ t('routine') }}</span>
+          <h2>{{ t('tracker') }}</h2>
+          <p>{{ t('trackerHint') }}</p>
+        </div>
+        <button class="button button-danger-quiet reset-button" type="button" (click)="resetWeek()"><span class="button-icon">↺</span>{{ t('reset') }}</button>
+      </div>
+
+      <div class="tracker-table">
+        <div class="tracker-grid day-header">
+          <div class="habit-heading">{{ t('routine') }}</div>
+          @for (day of weekdays; track $index) {
+            <div class="day-heading" [class.is-today]="weekDays[$index].toDateString() === todayString">
+              <span class="day-name">{{ day[language] }}</span><span class="day-date">{{ formatCompactDate(weekDays[$index]) }}</span>
+            </div>
+          }
+        </div>
+        @for (section of sections; track section.id) {
+          <div class="routine-group-row">
+            <span class="routine-icon" [class]="'routine-icon tone-' + section.tone">{{ section.icon }}</span>
+            <strong>{{ sectionTitle(section) }}</strong>
+            @if (section.id === 'water') { <span class="goal-pill">{{ t('waterGoal') }}</span> }
+          </div>
+          @for (item of section.items; track item.id) {
+            <div class="tracker-grid habit-row" [class.complete-row]="!item.water && allDaysChecked(item)">
+              <div class="habit-name">{{ text(item) }}</div>
+              @for (day of weekdays; track $index) {
+                <div class="check-cell">
+                  @if (item.water) {
+                    <div class="water-checks">
+                      @for (cup of [0, 1, 2, 3]; track cup) {
+                        <input class="routine-checkbox water-checkbox" type="checkbox" [checked]="isChecked(item, $index, cup)" (change)="setChecked(item, $index, $event, cup)" [attr.aria-label]="text(item) + ' ' + (cup + 1) + ' · ' + day[language]" />
+                      }
+                    </div>
+                  } @else {
+                    <input class="routine-checkbox" type="checkbox" [checked]="isChecked(item, $index)" (change)="setChecked(item, $index, $event)" [attr.aria-label]="text(item) + ' · ' + day[language]" />
+                  }
+                </div>
+              }
+            </div>
+          }
+        }
+      </div>
+      <footer class="tracker-footer">
+        <button class="button button-danger-quiet reset-button mobile-reset" type="button" (click)="resetWeek()">{{ t('reset') }}</button>
+        <span>{{ backupNotice || t('saved') }}</span>
+        <div class="backup-actions">
+          <button class="text-button" type="button" (click)="exportBackup()">{{ t('export') }}</button>
+          <button class="text-button" type="button" (click)="backupFile.click()">{{ t('import') }}</button>
+          <input #backupFile class="visually-hidden" type="file" accept="application/json,.json" (change)="importBackup($event)" />
+        </div>
+      </footer>
+    </section>
+    <footer class="page-footer"><span>ROUTINE TRACKER</span><span>{{ footerNote }}</span></footer>
+  </main>
+
+  @if (statsOpen) {
+    <div class="modal-backdrop" role="presentation" (click)="closeStats()">
+      <section class="stats-modal" role="dialog" aria-modal="true" aria-labelledby="stats-title" (click)="$event.stopPropagation()">
+        <header class="modal-header">
+          <div><span class="section-kicker">{{ t('stats') }}</span><h2 id="stats-title">{{ t('statsTitle') }}</h2><p>{{ t('statsHint') }}</p></div>
+          <button class="icon-button close-button" type="button" [attr.aria-label]="t('close')" (click)="closeStats()">×</button>
+        </header>
+        <div class="filter-row">
+          <label>{{ t('month') }}<select [(ngModel)]="statsMonth"><option *ngFor="let month of monthNames; let i = index" [ngValue]="i">{{ month }}</option></select></label>
+          <label>{{ t('year') }}<select [(ngModel)]="statsYear"><option *ngFor="let year of yearOptions" [ngValue]="year">{{ year }}</option></select></label>
+        </div>
+        <div class="stats-overview">
+          <article class="monthly-score">
+            <div class="score-ring" [style.--score]="statsProgress + '%'" [attr.aria-label]="statsProgress + '%'">
+              <div><strong>{{ statsProgress }}%</strong><span>{{ t('monthlyRate') }}</span></div>
+            </div>
+          </article>
+          <div class="stat-cards">
+            <article class="stat-card"><span>{{ t('tasksDone') }}</span><strong>{{ statsChecked }} <small>{{ t('of') }} {{ statsTotal }}</small></strong><div class="stat-card-note">{{ monthNames[statsMonth] }} {{ statsYear }}</div></article>
+            <article class="stat-card"><span>{{ t('recordedDays') }}</span><strong>{{ statsDays.length }} <small>{{ t('day') }}</small></strong><div class="stat-card-note">{{ t('statsHint') }}</div></article>
+          </div>
+        </div>
+        <div class="stats-block">
+          <h3>{{ t('weekBreakdown') }}</h3>
+          @if (statsWeeks.length) {
+            @for (week of statsWeeks; track week.start.getTime()) {
+              <article class="week-stat-row"><div class="week-stat-copy"><span>{{ formatDate(week.start) }} – {{ formatDate(week.days[6].date) }}</span><strong>{{ percentForWeek(week) }}%</strong></div><div class="mini-track"><div class="mini-fill" [style.width.%]="percentForWeek(week)"></div></div></article>
+            }
+          } @else { <p class="empty-state">{{ t('noData') }}</p> }
+        </div>
+        <div class="stats-block year-block">
+          <h3>{{ t('yearBreakdown') }}</h3>
+          <div class="month-stats">
+            @for (month of monthNames; track $index) {
+              <button class="month-tile" type="button" [class.selected]="statsMonth === $index" [class.no-records]="!getRecordedDays($index)" (click)="statsMonth = $index">
+                <span>{{ month }}</span><strong>{{ getRecordedDays($index) ? percentForMonth($index) + '%' : '—' }}</strong>
+                <i [style.width.%]="percentForMonth($index)"></i>
+              </button>
+            }
+          </div>
+        </div>
+      </section>
+    </div>
+  }
+</div>
